@@ -52,7 +52,8 @@ public class RestStop implements Comparable<RestStop> {
      * @throws ClassCastException   if the specified object's type prevents it from
      *                              being compared to this object.
      */
-    @Override public int compareTo(RestStop o) {
+    @Override
+    public int compareTo(RestStop o) {
         return 0;
     }
 }

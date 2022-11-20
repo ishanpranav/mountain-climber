@@ -198,6 +198,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      *                              not permit null elements
      */
     public boolean add(E e) {
+        version++;
         return false;
     }
 
@@ -217,6 +218,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      * @throws NullPointerException if the specified element is null
      */
     public boolean remove(Object o) {
+        version++;
         return false;
     }
 
@@ -228,6 +230,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      * This operation should be O(1).
      */
     public void clear() {
+        version++;
     }
 
     /**

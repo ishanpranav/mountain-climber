@@ -11,4 +11,9 @@ import java.util.ArrayList;
  */
 public class Hiker {
     private final ArrayList<Supply> supplies = new ArrayList<Supply>();
+
+    /** Initializes a new instance of the {@link Hiker} class. */
+    public Hiker() {
+
+    }
 }
