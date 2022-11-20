@@ -1,16 +1,14 @@
 package project4;
 
 /**
- * Represents an obstacle.
+ * Specifies an obstacle.
+ * 
+ * @author Ishan Pranav
  */
 public enum Obstacle {
-    /**
-     * Specifies a fallen tree.
-     */
+    /** A fallen tree. */
     FALLEN_TREE,
 
-    /**
-     * Specifies a river boundary.
-     */
+    /** A river boundary. */
     RIVER
 }

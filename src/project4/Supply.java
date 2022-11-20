@@ -1,21 +1,17 @@
 package project4;
 
 /**
- * Represents a supply.
+ * Specifies a supply.
+ * 
+ * @author Ishan Pranav
  */
 public enum Supply {
-    /**
-     * Specifies a single ration of food.
-     */
+    /** A single ration of food. */
     FOOD,
 
-    /**
-     * Specifies a raft.
-     */
+    /** A raft. */
     RAFT,
 
-    /**
-     * Specifies an axe tool.
-     */
+    /** An axe tool. */
     AXE
 }
