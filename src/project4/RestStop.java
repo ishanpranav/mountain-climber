@@ -1,7 +1,5 @@
 package project4;
 
-import java.util.ArrayList;
-
 /**
  * Represents a single rest stop.
  * 
@@ -13,30 +11,21 @@ import java.util.ArrayList;
  */
 public class RestStop implements Comparable<RestStop> {
     private final String label;
-    private final ArrayList<Supply> supplies = new ArrayList<Supply>();
-    private final ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+    
+    private int foodRations;
+    private int rafts;
+    private int axes;
+    private int rivers;
+    private int fallenTrees;
 
     /** Initializes a new instance of the {@link RestStop} class. */
-    public RestStop(String label) {
+    public RestStop(String label, int foodRations, int rafts, int axes, int rivers, int fallenTrees) {
         this.label = label;
-    }
-
-    /**
-     * Adds the specified supply to the rest stop.
-     * 
-     * @param supply the supply to add
-     */
-    public void add(Supply supply) {
-        supplies.add(supply);
-    }
-
-    /**
-     * Adds the specified obstacle to the rest stop.
-     * 
-     * @param obstacle the obstacle to add
-     */
-    public void add(Obstacle obstacle) {
-        obstacles.add(obstacle);
+        this.foodRations = foodRations;
+        this.rafts = rafts;
+        this.axes = axes;
+        this.rivers = rivers;
+        this.fallenTrees = fallenTrees;
     }
 
     /**
@@ -54,6 +43,10 @@ public class RestStop implements Comparable<RestStop> {
      */
     @Override
     public int compareTo(RestStop o) {
-        return 0;
+        if (o == null) {
+            throw new NullPointerException("Argument is not null. Argument name: o.");
+        }
+
+        return label.compareTo(o.label);
     }
 }

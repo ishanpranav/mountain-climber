@@ -10,10 +10,12 @@ import java.util.ArrayList;
  * @author Ishan Pranav
  */
 public class Hiker {
-    private final ArrayList<Supply> supplies = new ArrayList<Supply>();
+    private int foodRations;
+    private int rafts;
+    private int axes;
 
     /** Initializes a new instance of the {@link Hiker} class. */
     public Hiker() {
-
+        
     }
 }

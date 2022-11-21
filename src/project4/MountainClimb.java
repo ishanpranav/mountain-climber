@@ -3,7 +3,6 @@ package project4;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -29,7 +28,8 @@ public class MountainClimb {
      */
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.err.println("The program requires a path to an input test file as a command-line argument. Argument name: args.");
+            System.err.println(
+                    "The program requires a path to an input test file as a command-line argument. Argument name: args.");
         }
 
         try (FileInputStream fileInputStream = new FileInputStream(args[0])) {
@@ -45,26 +45,30 @@ public class MountainClimb {
      * @param inputStream the input stream containing instructions to be processed
      */
     public static void main(InputStream inputStream) {
-        BSTMountain mountain = new BSTMountain();
+        final BSTMountain mountain = new BSTMountain();
 
         try (Scanner scanner = new Scanner(inputStream)) {
             while (scanner.hasNextLine()) {
                 final String line = scanner.nextLine();
                 final String[] segments = line.split(" ");
-                final RestStop restStop = new RestStop(segments[0]);
                 final int count = segments.length;
-                
+
                 int index = 1;
+                int foodRations = 0;
+                int rafts = 0;
+                int axes = 0;
+                int rivers = 0;
+                int fallenTrees = 0;
 
                 while (index < count) {
                     final String supplySegment = segments[index];
 
                     if (supplySegment.equals("food")) {
-                        restStop.add(Supply.FOOD);
+                        foodRations++;
                     } else if (supplySegment.equals("raft")) {
-                        restStop.add(Supply.RAFT);
+                        rafts++;
                     } else if (supplySegment.equals("axe")) {
-                        restStop.add(Supply.AXE);
+                        axes++;
                     } else {
                         break;
                     }
@@ -76,18 +80,16 @@ public class MountainClimb {
                     final String obstacleSegment = segments[index];
 
                     if (obstacleSegment.equals("river")) {
-                        restStop.add(Obstacle.RIVER);
-                        
+                        rivers++;
                         index++;
                     } else if (index + 1 < count && obstacleSegment.equals("fallen")
                             && segments[index + 1].equals("tree")) {
-                        restStop.add(Obstacle.FALLEN_TREE);
-
+                        fallenTrees++;
                         index += 2;
                     }
                 }
 
-                mountain.add(restStop);
+                mountain.add(new RestStop(segments[0], foodRations, rafts, axes, rivers, fallenTrees));
             }
         }
     }
