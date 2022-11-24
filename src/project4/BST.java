@@ -40,35 +40,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         public Node(E value) {
             this.value = value;
         }
-
-        /** Updates the one-based height and count (total sub-tree size). */
-        public void saveChanges() {
-            final boolean hasLeft = left != null;
-            final boolean hasRight = right != null;
-
-            if (hasLeft && hasRight) {
-                // The height is based on the maximum of the left and right sub-trees
-                // The count is based on the total size of the left and right sub-trees
-
-                height = Math.max(left.height, right.height) + 1;
-                count = left.count + right.count + 1;
-            } else if (hasLeft) {
-                // If there is only a left sub-tree, then use its height and count plus one
-
-                height = left.height + 1;
-                count = left.count + 1;
-            } else if (hasRight) {
-                // If there is only a right sub-tree, then use its height and count plus one
-
-                height = right.height + 1;
-                count = right.count + 1;
-            } else {
-                // If this is a leaf node, then its height and count are one by default
-
-                height = 1;
-                count = 1;
-            }
-        }
     }
 
     /**
@@ -349,6 +320,40 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
             return result;
         }
+
+        /**
+         * Clears the stack, updating each node's height and count from the bottom up.
+         */
+        public void saveChanges() {
+            while (stackSize > 0) {
+                final Node node = pop();
+                final boolean hasLeft = node.left != null;
+                final boolean hasRight = node.right != null;
+
+                if (hasLeft && hasRight) {
+                    // The height is based on the maximum of the left and right sub-trees
+                    // The count is based on the total size of the left and right sub-trees
+
+                    node.height = Math.max(node.left.height, node.right.height) + 1;
+                    node.count = node.left.count + node.right.count + 1;
+                } else if (hasLeft) {
+                    // If there is only a left sub-tree, then use its height and count plus one
+
+                    node.height = node.left.height + 1;
+                    node.count = node.left.count + 1;
+                } else if (hasRight) {
+                    // If there is only a right sub-tree, then use its height and count plus one
+
+                    node.height = node.right.height + 1;
+                    node.count = node.right.count + 1;
+                } else {
+                    // If this is a leaf node, then its height and count are one by default
+
+                    node.height = 1;
+                    node.count = 1;
+                }
+            }
+        }
     }
 
     private int version;
@@ -450,12 +455,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             parent.right = node;
         }
 
-        // Cascade: update all the heights and counts in reverse order to account for
-        // the latest changes
-
-        while (!stack.isEmpty()) {
-            stack.pop().saveChanges();
-        }
+        stack.saveChanges();
 
         version++;
 
@@ -593,12 +593,8 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             }
         }
 
-        // Cascade: update all the heights and counts in reverse order to account for
-        // the latest changes
+        stack.saveChanges();
 
-        while (!stack.isEmpty()) {
-            stack.pop().saveChanges();
-        }
         version++;
 
         return true;
@@ -1053,13 +1049,13 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
-            // The argument is the current instance
+            // Exit early if comparing the same instance
 
             return true;
         }
 
         if (!(obj instanceof BST)) {
-            // The argument is not a tree
+            // Exit early if the types are mismatched
 
             return false;
         }
@@ -1067,7 +1063,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         final BST other = (BST) obj;
 
         if (size() != other.size()) {
-            // The two trees have different sizes
+            // Exit early if the sizes are different
 
             return false;
         }
@@ -1077,7 +1073,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
         while (iterator.hasNext()) {
             if (!Objects.equals(iterator.next(), otherIterator.next())) {
-                // The order of the elements is not identical
+                // A difference was detected
 
                 return false;
             }
@@ -1158,7 +1154,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         // Begin with the root node
 
         nodes[0] = root;
-        levels[0] = 1;
 
         while (index > 0) {
             result.append('\n');
@@ -1171,12 +1166,14 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
             int level = levels[index];
 
-            for (int i = 1; i < level; i++) {
-                result.append("   ");
+            if (level > 0) {
+                for (int i = 1; i < level; i++) {
+                    result.append("   ");
+                }
+
+                result.append("|--");
             }
-
-            result.append("|--");
-
+            
             if (node == null) {
                 result.append("null");
             } else {
@@ -1191,11 +1188,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
                 index++;
 
                 result.append(node.value);
-                result.append(" [");
-                result.append(node.height);
-                result.append(", ");
-                result.append(node.count);
-                result.append("]");
             }
         }
 
