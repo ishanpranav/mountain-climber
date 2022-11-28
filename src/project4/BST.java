@@ -25,7 +25,13 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      * 
      * @author Ishan Pranav
      */
-    private class Node {
+    protected class Node {
+        // Professor Klukowska has allowed the root node to be declared protected; as a
+        // result, we must make the Node class protected as well. To ensure that we are
+        // only exposing information on a need-to-know basis, we can fully encapsulate
+        // this class by exposing protected read-only property accessors. A private
+        // constructor prevents instantiation of new nodes from outside the class.
+
         private E value;
         private int height = 1;
         private int count = 1;
@@ -33,11 +39,40 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         private Node right;
 
         /**
+         * Gets the data element contained within the node.
+         * 
+         * @return the node data
+         */
+        protected E getValue() {
+            return value;
+        }
+
+        /**
+         * Gets a reference to the left sub-tree of the node.
+         * 
+         * @return the child on the left side, containing elements that precede this
+         *         node instance
+         */
+        protected Node getLeft() {
+            return left;
+        }
+
+        /**
+         * Gets a reference to the right sub-tree of the node.
+         * 
+         * @return the child on the right side, containing elements that follow this
+         *         node instance
+         */
+        protected Node getRight() {
+            return right;
+        }
+
+        /**
          * Initializes a new instance of the {@link Node} class.
          * 
          * @param value The node data.
          */
-        public Node(E value) {
+        private Node(E value) {
             this.value = value;
         }
     }
@@ -50,6 +85,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      * @author Ishan Pranav
      */
     private abstract class BSTIterator implements Iterator<E> {
+        /** Specifies the empty buffer, cached to avoid allocating many empty sets. */
         private static final Object[] EMPTY = new Object[0];
 
         private final int expectedVersion = version;
@@ -356,8 +392,8 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         }
     }
 
-    private int version;
-    private Node root;
+    protected int version;
+    protected Node root;
 
     /**
      * Constructs a new, empty tree, sorted according to the natural ordering of its
@@ -425,14 +461,13 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         while (current != null) {
             stack.push(current);
 
-            comparison = e.compareTo(current.value);
-
             // Exit early if the element already exists in the tree
 
-            if (comparison == 0) {
+            if (Objects.equals(current.value, e)) {
                 return false;
             }
 
+            comparison = e.compareTo(current.value);
             parent = current;
 
             // Binary search: move left or right based on the element's relative order
@@ -522,7 +557,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         // If the loop terminates without reaching the early exit condition, then the
         // element does not already exist in the tree
 
-        if (comparison != 0) {
+        if (!Objects.equals(current.value, e)) {
             return false;
         }
 
@@ -1135,7 +1170,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         // Exit early if there is no tree
 
         if (root == null) {
-            return "\nnull";
+            return "null";
         }
 
         // A preorder traversal occurs in root-left-right order
@@ -1156,8 +1191,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         nodes[0] = root;
 
         while (index > 0) {
-            result.append('\n');
-
             // Process the current node
 
             index--;
@@ -1173,7 +1206,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
                 result.append("|--");
             }
-            
+
             if (node == null) {
                 result.append("null");
             } else {
@@ -1188,6 +1221,10 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
                 index++;
 
                 result.append(node.value);
+            }
+
+            if (index > 0) {
+                result.append('\n');
             }
         }
 

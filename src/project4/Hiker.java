@@ -1,7 +1,5 @@
 package project4;
 
-import java.util.ArrayList;
-
 /**
  * Represents a hiker traveling down a mountain.
  * 
@@ -10,12 +8,13 @@ import java.util.ArrayList;
  * @author Ishan Pranav
  */
 public class Hiker {
-    private int foodRations;
-    private int rafts;
-    private int axes;
+    private final SupplyCollection backpack = new SupplyCollection();
 
+    public SupplyCollection getBackpack() {
+        return backpack;
+    }
+    
     /** Initializes a new instance of the {@link Hiker} class. */
     public Hiker() {
-        
     }
 }

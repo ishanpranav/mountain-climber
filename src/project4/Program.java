@@ -8,7 +8,6 @@ public class Program {
     private static char[] elements = new char[] { 'K', 'D', 'P', 'B', 'J', 'M', 'A', 'L', 'O', 'N' };
 
     public static void main(String[] args) {
-
         for (char e : elements) {
             add(e);
             display();

@@ -3,6 +3,7 @@ package project4;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
@@ -33,7 +34,7 @@ public class MountainClimb {
         }
 
         try (FileInputStream fileInputStream = new FileInputStream(args[0])) {
-            main(fileInputStream);
+            main(fileInputStream, System.out);
         } catch (IOException ioException) {
             System.err.println("An error occured while attempting to parse the test file.");
         }
@@ -44,8 +45,10 @@ public class MountainClimb {
      * 
      * @param inputStream the input stream containing instructions to be processed
      */
-    public static void main(InputStream inputStream) {
+    public static void main(InputStream inputStream, PrintStream outputStream) {
         final BSTMountain mountain = new BSTMountain();
+
+        // Parse file line-by-line using a streaming scanner
 
         try (Scanner scanner = new Scanner(inputStream)) {
             while (scanner.hasNextLine()) {
@@ -59,6 +62,8 @@ public class MountainClimb {
                 int axes = 0;
                 int rivers = 0;
                 int fallenTrees = 0;
+
+                // Parse supplies
 
                 while (index < count) {
                     final String supplySegment = segments[index];
@@ -76,6 +81,8 @@ public class MountainClimb {
                     index++;
                 }
 
+                // Parse obstacles
+
                 while (index < count) {
                     final String obstacleSegment = segments[index];
 
@@ -84,13 +91,27 @@ public class MountainClimb {
                         index++;
                     } else if (index + 1 < count && obstacleSegment.equals("fallen")
                             && segments[index + 1].equals("tree")) {
+                        // Two-word obstacle requires lookahead
+
                         fallenTrees++;
                         index += 2;
                     }
                 }
+                
+                SupplyCollection supplies = new SupplyCollection(foodRations, rafts, axes);
+                RestStop restStop = new RestStop(segments[0], supplies, rivers, fallenTrees);
 
-                mountain.add(new RestStop(segments[0], foodRations, rafts, axes, rivers, fallenTrees));
+                mountain.add(restStop);
             }
+        }
+
+        for (RestStop[] path : mountain.findPaths()) {
+            for (RestStop restStop : path) {
+                outputStream.print(restStop);
+                outputStream.print(' ');
+            }
+
+            outputStream.println();
         }
     }
 }

@@ -11,19 +11,14 @@ package project4;
  */
 public class RestStop implements Comparable<RestStop> {
     private final String label;
-    
-    private int foodRations;
-    private int rafts;
-    private int axes;
-    private int rivers;
-    private int fallenTrees;
+    private final SupplyCollection supplies;
+    private final int rivers;
+    private final int fallenTrees;
 
     /** Initializes a new instance of the {@link RestStop} class. */
-    public RestStop(String label, int foodRations, int rafts, int axes, int rivers, int fallenTrees) {
+    public RestStop(String label, SupplyCollection supplies, int rivers, int fallenTrees) {
         this.label = label;
-        this.foodRations = foodRations;
-        this.rafts = rafts;
-        this.axes = axes;
+        this.supplies = supplies;
         this.rivers = rivers;
         this.fallenTrees = fallenTrees;
     }
@@ -48,5 +43,32 @@ public class RestStop implements Comparable<RestStop> {
         }
 
         return label.compareTo(o.label);
+    }
+
+    @Override
+    public String toString() {
+        return label;
+    }
+
+    @Override
+    public int hashCode() {
+        return label.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null) {
+            return false;
+        }
+
+        if (!(obj instanceof RestStop)) {
+            return false;
+        }
+
+        return label.equals(((RestStop)obj).label);
     }
 }
