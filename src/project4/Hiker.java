@@ -1,5 +1,7 @@
 package project4;
 
+import java.util.ArrayList;
+
 /**
  * Represents a hiker traveling down a mountain.
  * 
@@ -8,13 +10,35 @@ package project4;
  * @author Ishan Pranav
  */
 public class Hiker {
-    private final SupplyCollection backpack = new SupplyCollection();
-
-    public SupplyCollection getBackpack() {
-        return backpack;
-    }
+    private int foodRations;
+    private int rafts;
+    private int axes;
+    private ArrayList<RestStop> paths;
     
     /** Initializes a new instance of the {@link Hiker} class. */
     public Hiker() {
+        paths = new ArrayList<RestStop>();
+    }
+
+    /** Initializes a new instance of the {@link Hiker} class. */
+    public Hiker(Hiker other) {
+        foodRations = other.foodRations;
+        rafts = other.rafts;
+        axes = other.axes;
+        paths = new ArrayList<RestStop>(other.paths);
+    }
+
+    public boolean visit(RestStop restStop) {
+        foodRations += restStop.foodRations - 1;
+        rafts += restStop.rafts;
+        axes += restStop.axes;
+        
+        if (foodRations >= 0 && rafts >= 0 && axes >= 0) {
+            paths.add(restStop);
+        
+            return true;
+        } else {
+            return false;
+        }
     }
 }

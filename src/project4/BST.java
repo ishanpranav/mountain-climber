@@ -27,10 +27,13 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      */
     protected class Node {
         // Professor Klukowska has allowed the root node to be declared protected; as a
-        // result, we must make the Node class protected as well. To ensure that we are
-        // only exposing information on a need-to-know basis, we can fully encapsulate
-        // this class by exposing protected read-only property accessors. A private
-        // constructor prevents instantiation of new nodes from outside the class.
+        // result, we must make the Node class protected as well.
+
+        // To ensure that we are only exposing information on a need-to-know basis, we
+        // can fully encapsulate this class by exposing protected read-only property
+        // accessors. A private constructor prevents instantiation of new nodes from
+        // outside the class. The root node is exposed through a protected read-only
+        // property accessor.
 
         private E value;
         private int height = 1;
@@ -85,9 +88,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      * @author Ishan Pranav
      */
     private abstract class BSTIterator implements Iterator<E> {
-        /** Specifies the empty buffer, cached to avoid allocating many empty sets. */
-        private static final Object[] EMPTY = new Object[0];
-
         private final int expectedVersion = version;
         private final Object[] buffer;
 
@@ -100,7 +100,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
          */
         protected BSTIterator() {
             if (root == null) {
-                buffer = EMPTY;
+                buffer = EmptyArray.VALUE;
             } else {
                 buffer = new Object[root.count];
             }
@@ -218,7 +218,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
                 while (!stack.isEmpty()) {
                     // Process the current node
 
-                    Node current = stack.pop();
+                    final Node current = stack.pop();
 
                     process(current.value);
 
@@ -312,7 +312,11 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
          * @param capacity the fixed capacity of the internal buffer
          */
         public BSTFixedStack(int capacity) {
-            buffer = new Object[capacity];
+            if (capacity == 0) {
+                buffer = EmptyArray.VALUE;
+            } else {
+                buffer = new Object[capacity];
+            }
         }
 
         /**
@@ -357,10 +361,8 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             return result;
         }
 
-        /**
-         * Clears the stack, updating each node's height and count from the bottom up.
-         */
-        public void saveChanges() {
+        /** Clears the stack, updating each node's height and count from bottom up. */
+        private void saveChanges() {
             while (stackSize > 0) {
                 final Node node = pop();
                 final boolean hasLeft = node.left != null;
@@ -392,8 +394,8 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         }
     }
 
-    protected int version;
-    protected Node root;
+    private int version;
+    private Node root;
 
     /**
      * Constructs a new, empty tree, sorted according to the natural ordering of its
@@ -417,6 +419,15 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         for (E item : collection) {
             add(item);
         }
+    }
+
+    /**
+     * Gets a reference to the root node of the tree.
+     * 
+     * @return the root node
+     */
+    protected Node getRoot() {
+        return root;
     }
 
     /**
@@ -1180,8 +1191,9 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         // argument, and a string return value; buffer size must be count + 1 to
         // accommodate both the left and the right side pushed at the same time
 
-        final Object[] nodes = new Object[root.count + 1];
-        final int[] levels = new int[root.count + 1];
+        final int bufferSize = root.count + 1;
+        final Object[] nodes = new Object[bufferSize];
+        final int[] levels = new int[bufferSize];
         final StringBuilder result = new StringBuilder();
 
         int index = 1;

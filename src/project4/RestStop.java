@@ -11,16 +11,25 @@ package project4;
  */
 public class RestStop implements Comparable<RestStop> {
     private final String label;
-    private final SupplyCollection supplies;
-    private final int rivers;
-    private final int fallenTrees;
+    public final int foodRations;
+    public final int rafts;
+    public final int axes;
 
-    /** Initializes a new instance of the {@link RestStop} class. */
-    public RestStop(String label, SupplyCollection supplies, int rivers, int fallenTrees) {
+    /**
+     * Initializes a new instance of the {@link RestStop} class.
+     * 
+     * @param label       the unique identifier of the rest stop
+     * @param foodRations the number of single food rations available
+     * @param rafts       the net rafts, or the difference between the number of
+     *                    rafts available and the number of rivers at the rest stop
+     * @param axes        the net axes, or the difference between the number of axes
+     *                    available and the number of fallen trees at the rest stop
+     */
+    public RestStop(String label, int foodRations, int rafts, int axes) {
         this.label = label;
-        this.supplies = supplies;
-        this.rivers = rivers;
-        this.fallenTrees = fallenTrees;
+        this.foodRations = foodRations;
+        this.rafts = rafts;
+        this.axes = axes;
     }
 
     /**
@@ -69,6 +78,6 @@ public class RestStop implements Comparable<RestStop> {
             return false;
         }
 
-        return label.equals(((RestStop)obj).label);
+        return label.equals(((RestStop) obj).label);
     }
 }
