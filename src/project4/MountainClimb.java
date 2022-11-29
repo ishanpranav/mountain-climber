@@ -14,7 +14,7 @@ import java.util.Scanner;
  * 
  * @author Ishan Pranav
  */
-public class MountainClimb {
+public final class MountainClimb {
 
     /** Initializes a new instance of the {@link MountainClimb} class. */
     private MountainClimb() {
@@ -60,8 +60,6 @@ public class MountainClimb {
                 int foodRations = 0;
                 int rafts = 0;
                 int axes = 0;
-                int rivers = 0;
-                int fallenTrees = 0;
 
                 // Parse supplies
 
@@ -74,40 +72,39 @@ public class MountainClimb {
                         rafts++;
                     } else if (supplySegment.equals("axe")) {
                         axes++;
-                    } else {
+                    } else if (supplySegment.equals("river")
+                            || supplySegment.equals("fallen")) {
                         break;
                     }
 
                     index++;
                 }
 
-                // Parse obstacles
+                // Parse obstacles and use lookahead for two-word obstacles
 
                 while (index < count) {
                     final String obstacleSegment = segments[index];
 
                     if (obstacleSegment.equals("river")) {
-                        rivers++;
-                        index++;
+                        rafts--;
                     } else if (index + 1 < count && obstacleSegment.equals("fallen")
                             && segments[index + 1].equals("tree")) {
-                        // Two-word obstacle requires lookahead
-
-                        fallenTrees++;
-                        index += 2;
+                        axes--;
+                        index++;
                     }
-                }
-                
-                SupplyCollection supplies = new SupplyCollection(foodRations, rafts, axes);
-                RestStop restStop = new RestStop(segments[0], supplies, rivers, fallenTrees);
 
-                mountain.add(restStop);
+                    index++;
+                }
+
+                mountain.add(new RestStop(segments[0], foodRations, rafts, axes));
             }
         }
 
-        for (RestStop[] path : mountain.findPaths()) {
-            for (RestStop restStop : path) {
-                outputStream.print(restStop);
+        final ArrayMatrix<RestStop> paths = mountain.findPaths();
+
+        for (int row = 0; row < paths.getRows(); row++) {
+            for (int column = 0; column < paths.getColumns(); column++) {
+                outputStream.print(paths.get(row, column));
                 outputStream.print(' ');
             }
 
