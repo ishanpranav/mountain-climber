@@ -26,14 +26,11 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      * @author Ishan Pranav
      */
     protected class Node {
-        // Professor Klukowska has allowed the root node to be declared protected; as a
-        // result, we must make the Node class protected as well.
-
         // To ensure that we are only exposing information on a need-to-know basis, we
         // can fully encapsulate this class by exposing protected read-only property
         // accessors. A private constructor prevents instantiation of new nodes from
         // outside the class. The root node is exposed through a protected read-only
-        // property accessor.
+        // property accessor. The tree can never be mutated outside the BST<E> class.
 
         private E value;
         private int height = 1;
@@ -394,12 +391,12 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         }
     }
 
-    private static class BSTQuickSortNode {
+    private static class BSTIndexNode {
         private int left;
         private int right;
-        private BSTQuickSortNode next;
+        private BSTIndexNode next;
 
-        public BSTQuickSortNode() {
+        public BSTIndexNode() {
         }
     }
 
@@ -425,12 +422,12 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             throw new NullPointerException("Argument cannot be null. Argument name: collection.");
         }
 
-        Comparable[] array = new Comparable[collection.length];
+        E[] array = (E[]) new Comparable[collection.length];
 
         System.arraycopy(collection, 0, array, 0, collection.length);
         sort(array);
 
-        BSTQuickSortNode head = new BSTQuickSortNode();
+        BSTIndexNode head = new BSTIndexNode();
 
         head.right = array.length - 1;
 
@@ -441,16 +438,16 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
             head = head.next;
 
-            add((E) array[median]);
+            add(array[median]);
             
             if (left < right) {
-                BSTQuickSortNode node = new BSTQuickSortNode();
+                BSTIndexNode node = new BSTIndexNode();
                 
                 node.left = left;
                 node.right = median - 1;
                 node.next = head;
                 head = node;
-                node = new BSTQuickSortNode();
+                node = new BSTIndexNode();
                 node.left = median + 1;
                 node.right = right;
                 node.next = head;
@@ -1268,8 +1265,8 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         return result.toString();
     }
     
-    public static void sort(Comparable[] array) {
-        BSTQuickSortNode head = new BSTQuickSortNode();
+    private void sort(E[] array) {
+        BSTIndexNode head = new BSTIndexNode();
 
         head.right = array.length - 1;
 
@@ -1281,7 +1278,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             head = head.next;
 
             if (partition - left > 1) {
-                BSTQuickSortNode node = new BSTQuickSortNode();
+                BSTIndexNode node = new BSTIndexNode();
 
                 node.left = left;
                 node.right = partition - 1;
@@ -1290,7 +1287,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             }
 
             if (right - partition > 1) {
-                BSTQuickSortNode node = new BSTQuickSortNode();
+                BSTIndexNode node = new BSTIndexNode();
 
                 node.left = partition + 1;
                 node.right = right;
@@ -1300,7 +1297,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         }
     }
 
-    private static int partition(Comparable[] array, int left, int right) {
+    private int partition(E[] array, int left, int right) {
         int pivot = findPivot(array, left, right);
 
         swap(array, right, pivot);
@@ -1327,7 +1324,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         return left;
     }
     
-    private static int findPivot(Comparable[] array, int left, int right) {
+    private int findPivot(E[] array, int left, int right) {
         int center = (left + right) / 2;
 
         if (array[right].compareTo(array[left]) < 0) {
@@ -1345,8 +1342,8 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         return center;
     }
 
-    private static void swap(Comparable[] array, int a, int b) {
-        Comparable item = array[a];
+    private void swap(E[] array, int a, int b) {
+        E item = array[a];
 
         array[a] = array[b];
         array[b] = item;

@@ -11,9 +11,9 @@ package project4;
  */
 public class RestStop implements Comparable<RestStop> {
     private final String label;
-    public final int foodRations;
-    public final int rafts;
-    public final int axes;
+    private final int foodRations;
+    private final int rafts;
+    private final int axes;
 
     /**
      * Initializes a new instance of the {@link RestStop} class.
@@ -30,6 +30,18 @@ public class RestStop implements Comparable<RestStop> {
         this.foodRations = foodRations;
         this.rafts = rafts;
         this.axes = axes;
+    }
+
+    public int getFoodRations() {
+        return foodRations;
+    }
+
+    public int getRafts() {
+        return rafts;
+    }
+
+    public int getAxes() {
+        return axes;
     }
 
     /**
