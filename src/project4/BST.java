@@ -394,6 +394,15 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         }
     }
 
+    private static class BSTQuickSortNode {
+        private int left;
+        private int right;
+        private BSTQuickSortNode next;
+
+        public BSTQuickSortNode() {
+        }
+    }
+
     private int version;
     private Node root;
 
@@ -416,8 +425,37 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             throw new NullPointerException("Argument cannot be null. Argument name: collection.");
         }
 
-        for (E item : collection) {
-            add(item);
+        Comparable[] array = new Comparable[collection.length];
+
+        System.arraycopy(collection, 0, array, 0, collection.length);
+        sort(array);
+
+        BSTQuickSortNode head = new BSTQuickSortNode();
+
+        head.right = array.length - 1;
+
+        while (head != null) {
+            int left = head.left;
+            int right = head.right;
+            int median = left + (right - left) / 2;
+
+            head = head.next;
+
+            add((E) array[median]);
+            
+            if (left < right) {
+                BSTQuickSortNode node = new BSTQuickSortNode();
+                
+                node.left = left;
+                node.right = median - 1;
+                node.next = head;
+                head = node;
+                node = new BSTQuickSortNode();
+                node.left = median + 1;
+                node.right = right;
+                node.next = head;
+                head = node;
+            }
         }
     }
 
@@ -659,42 +697,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
     }
 
     /**
-     * Retrieves the node containing the specified element.
-     * 
-     * WARNING: This method does not enforce logical preconditions.
-     * Precondition: {@code e} is not {@code null}.
-     * 
-     * @param e the element to find
-     * @return the node containing {@code e}, or {@code null} if no such element
-     *         exists in the tree
-     */
-    private Node find(E e) {
-        Node current = root;
-
-        while (current != null) {
-            int comparison = e.compareTo(current.value);
-
-            if (comparison == 0) {
-                // Found the element
-
-                return current;
-            } else if (comparison < 0) {
-                // If the element precedes the current node, advance left
-
-                current = current.left;
-            } else if (comparison > 0) {
-                // If the element follows the current node, advance right
-
-                current = current.right;
-            }
-        }
-
-        // The root is null or the loop terminated without finding the element
-
-        return null;
-    }
-
-    /**
      * Returns true if this set contains the specified element.
      * 
      * More formally, returns true if and only if this set contains an element e
@@ -715,7 +717,30 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             throw new NullPointerException("Argument cannot be null. Argument name: o.");
         }
 
-        return find((E) o) != null;
+        E e = (E) o;
+        Node current = root;
+
+        while (current != null) {
+            int comparison = e.compareTo(current.value);
+
+            if (comparison == 0) {
+                // Found the element
+
+                return true;
+            } else if (comparison < 0) {
+                // If the element precedes the current node, advance left
+
+                current = current.left;
+            } else if (comparison > 0) {
+                // If the element follows the current node, advance right
+
+                current = current.right;
+            }
+        }
+
+        // The root is null or the loop terminated without finding the element
+
+        return false;
     }
 
     /**
@@ -1212,7 +1237,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             int level = levels[index];
 
             if (level > 0) {
-                for (int i = 1; i < level; i++) {
+                for (int indent = 0; indent < level - 1; indent++) {
                     result.append("   ");
                 }
 
@@ -1241,5 +1266,89 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         }
 
         return result.toString();
+    }
+    
+    public static void sort(Comparable[] array) {
+        BSTQuickSortNode head = new BSTQuickSortNode();
+
+        head.right = array.length - 1;
+
+        while (head != null) {
+            int left = head.left;
+            int right = head.right;
+            int partition = partition(array, left, right);
+
+            head = head.next;
+
+            if (partition - left > 1) {
+                BSTQuickSortNode node = new BSTQuickSortNode();
+
+                node.left = left;
+                node.right = partition - 1;
+                node.next = head;
+                head = node;
+            }
+
+            if (right - partition > 1) {
+                BSTQuickSortNode node = new BSTQuickSortNode();
+
+                node.left = partition + 1;
+                node.right = right;
+                node.next = head;
+                head = node;
+            }
+        }
+    }
+
+    private static int partition(Comparable[] array, int left, int right) {
+        int pivot = findPivot(array, left, right);
+
+        swap(array, right, pivot);
+
+        pivot = right;
+        right--;
+
+        while (left <= right) {
+            while (array[left].compareTo(array[pivot]) < 0) {
+                left++;
+            }
+
+            while (right >= left && array[right].compareTo(array[pivot]) >= 0) {
+                right--;
+            }
+
+            if (right > left) {
+                swap(array, left, right);
+            }
+        }
+
+        swap(array, left, pivot);
+
+        return left;
+    }
+    
+    private static int findPivot(Comparable[] array, int left, int right) {
+        int center = (left + right) / 2;
+
+        if (array[right].compareTo(array[left]) < 0) {
+            swap(array, left, right);
+        }
+
+        if (array[center].compareTo(array[left]) < 0) {
+            swap(array, center, left);
+        }
+
+        if (array[right].compareTo(array[center]) < 0) {
+            swap(array, right, center);
+        }
+
+        return center;
+    }
+
+    private static void swap(Comparable[] array, int a, int b) {
+        Comparable item = array[a];
+
+        array[a] = array[b];
+        array[b] = item;
     }
 }

@@ -1,7 +1,5 @@
 package project4;
 
-import java.util.Arrays;
-
 /**
  * Represents a mountain implemented using a binary search tree.
  * 
@@ -60,12 +58,19 @@ public class BSTMountain extends BST<RestStop> {
             depth++;
             nodes[index] = node.getRight();
             hikers[index] = new Hiker(hiker);
-            paths[index] = Arrays.copyOf(path, path.length);
+            paths[index] = new RestStop[height];
+
+            System.arraycopy(path, 0, paths[index], 0, height);
+        
             depths[index] = depth;
             index++;
             nodes[index] = node.getLeft();
             hikers[index] = new Hiker(hiker);
-            paths[index] = Arrays.copyOf(path, path.length);
+            
+            paths[index] = new RestStop[height];
+
+            System.arraycopy(path, 0, paths[index], 0, height);
+
             depths[index] = depth;
             index++;
         }
