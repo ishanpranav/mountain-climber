@@ -29,9 +29,9 @@ public class Hiker {
     }
 
     public boolean visit(RestStop restStop) {
-        foodRations += restStop.foodRations - 1;
-        rafts += restStop.rafts;
-        axes += restStop.axes;
+        foodRations += restStop.getFoodRations() - 1;
+        rafts += restStop.getRafts();
+        axes += restStop.getAxes();
         
         if (foodRations >= 0 && rafts >= 0 && axes >= 0) {
             paths.add(restStop);
