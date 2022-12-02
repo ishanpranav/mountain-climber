@@ -27,29 +27,34 @@ public class Hiker {
         axes = other.axes;
     }
 
+    /** Consumes a single ration of food. */
+    public void eat() {
+        foodRations--;
+    }
+
     /**
      * Visits a rest stop and collects the supplies available there.
      * 
      * @param restStop the rest stop to visit
      */
     public void visit(RestStop restStop) {
-        // Collect the food, rafts, and axes available, and consume one food ration
+        // Collect the food, rafts, and axes available
         // Negative rafts represent rivers; negative axes represent fallen trees
 
-        foodRations += restStop.getFoodRations() - 1;
+        foodRations += restStop.getFoodRations();
         rafts += restStop.getRafts();
         axes += restStop.getAxes();
     }
 
     /**
-     * Determines whether the hiker has survived obstacles.
+     * Determines whether the hiker has not survived an obstacle.
      * 
-     * @return {@code true} if the hiker survived at the rest stop; {@code false}
-     *         otherwise {@code false}
+     * @return {@code false} if the hiker survived at the rest stop; {@code true}
+     *         otherwise
      */
-    public boolean isAlive() {
+    public boolean isDead() {
         // If any resource is negative, then the hiker has failed to survive
 
-        return foodRations >= 0 && rafts >= 0 && axes >= 0;
+        return foodRations < 0 || rafts < 0 || axes < 0;
     }
 }
