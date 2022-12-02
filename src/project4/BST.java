@@ -438,8 +438,8 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
         // Create a shallow clone of the array to maintain the integrity of the
         // reference passed as a constructor argument; since this method takes a mutable
-        // reference type as an argument, we must ensure that that reference is not
-        // mutated for the sake of the client
+        // reference type as an argument, we must ensure that that we do not surprise
+        // the user of the class by mutating their object (such as by sorting the array)
 
         final E[] array = (E[]) new Comparable[collection.length];
 

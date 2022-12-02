@@ -55,28 +55,34 @@ public class BSTMountain extends BST<RestStop> {
 
             final RestStop[] path = paths[index];
             final RestStop restStop = node.getValue();
+            final Hiker hiker = hikers[index];
 
             int depth = depths[index];
 
             // Exit early If the bottom of the mountain was reached successfully
 
             if (depth == maxDepth) {
-                // Include the last rest stop in the current working path
+                if (hiker.isAlive()) {
+                    // Include the last rest stop in the current working path if the hiker has
+                    // survived thus far
 
-                path[depth] = restStop;
+                    path[depth] = restStop;
 
-                // Copy the rest-stop steps of the current working path into the results matrix
+                    // Copy the rest-stop steps of the current working path into the results matrix
 
-                results.add(path);
+                    results.add(path);
+                }
 
                 continue;
             }
 
-            final Hiker hiker = hikers[index];
+            // Collect supplies and overcome obstacles
+
+            hiker.visit(restStop);
 
             // Exit early if the hiker does not survive the visit to the rest stop
 
-            if (!hiker.visit(restStop)) {
+            if (!hiker.isAlive()) {
                 continue;
             }
 
