@@ -96,8 +96,11 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
          * {@link BSTIterator} class.
          */
         protected BSTIterator() {
+            // The iterator uses a fixed array buffer since there will always be N elements
+            // A cached empty array avoids allocating mutliple identical array instances
+
             if (root == null) {
-                buffer = EmptyArray.VALUE;
+                buffer = EmptyArray.instance();
             } else {
                 buffer = new Object[root.count];
             }
@@ -309,8 +312,12 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
          * @param capacity the fixed capacity of the internal buffer
          */
         public BSTFixedStack(int capacity) {
+            // The stack uses a fixed-size array buffer since there will be fixed number of
+            // recursive calls
+            // A cached empty array avoids allocating multiple identical array instances
+
             if (capacity == 0) {
-                buffer = EmptyArray.VALUE;
+                buffer = EmptyArray.instance();
             } else {
                 buffer = new Object[capacity];
             }
@@ -391,11 +398,18 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         }
     }
 
+    /**
+     * Provides a minimal linked list node with two data fields used in searching
+     * and sorting algorithms to simulate a recursive function stack trace.
+     * 
+     * @author Ishan Pranav
+     */
     private static class BSTIndexNode {
         private int left;
         private int right;
         private BSTIndexNode next;
 
+        /** Initializes a new instance of the {@link BSTIndexNode} class. */
         public BSTIndexNode() {
         }
     }
@@ -422,33 +436,55 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             throw new NullPointerException("Argument cannot be null. Argument name: collection.");
         }
 
-        E[] array = (E[]) new Comparable[collection.length];
+        // Create a shallow clone of the array to maintain the integrity of the
+        // reference passed as a constructor argument; since this method takes a mutable
+        // reference type as an argument, we must ensure that that reference is not
+        // mutated for the sake of the client
+
+        final E[] array = (E[]) new Comparable[collection.length];
 
         System.arraycopy(collection, 0, array, 0, collection.length);
         sort(array);
 
+        // Use linked-list nodes to simulate a recursive function stack trace with a
+        // left and right index
+
         BSTIndexNode head = new BSTIndexNode();
+
+        // The left (first) index will be zero by default
+        // Push the last index of the array as the right index
 
         head.right = array.length - 1;
 
         while (head != null) {
-            int left = head.left;
-            int right = head.right;
-            int median = left + (right - left) / 2;
+            // Peek the left and right indices from the top of the stack and calculate their
+            // average
+
+            final int left = head.left;
+            final int right = head.right;
+            final int center = (right + left) / 2;
+
+            // Pop the top of the stack
 
             head = head.next;
 
-            add(array[median]);
-            
+            // Add one median at a time to keep the tree balanced
+
+            add(array[center]);
+
             if (left < right) {
+                // Push two new nodes onto the stack:
+                // Simulate recursive call (left: left, right: center - 1)
+                // Simulate recursive call (left: center + 1, right: right)
+
                 BSTIndexNode node = new BSTIndexNode();
-                
+
                 node.left = left;
-                node.right = median - 1;
+                node.right = center - 1;
                 node.next = head;
                 head = node;
                 node = new BSTIndexNode();
-                node.left = median + 1;
+                node.left = center + 1;
                 node.right = right;
                 node.next = head;
                 head = node;
@@ -576,12 +612,11 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
         Node parent = null;
         Node current = root;
-        int comparison = 0;
 
         while (current != null) {
             stack.push(current);
 
-            comparison = e.compareTo(current.value);
+            final int comparison = e.compareTo(current.value);
 
             // Exit early if the element exists in the tree
 
@@ -603,7 +638,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         // If the loop terminates without reaching the early exit condition, then the
         // element does not already exist in the tree
 
-        if (!Objects.equals(current.value, e)) {
+        if (current == null) {
             return false;
         }
 
@@ -714,7 +749,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             throw new NullPointerException("Argument cannot be null. Argument name: o.");
         }
 
-        E e = (E) o;
+        final E e = (E) o;
         Node current = root;
 
         while (current != null) {
@@ -841,7 +876,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         Node current = root;
 
         while (current != null) {
-            // Count the left side
+            // Count the number of nodes in the left sub-tree
 
             final int leftCount;
 
@@ -857,7 +892,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
                 current = current.left;
             } else if (index > leftCount) {
                 // If the index is on the right side, move right and narrow in on the right
-                // sub-tree, skipping the entire left sub-tree and the current (root) node
+                // sub-tree, skipping the entire left sub-tree and the current node
 
                 current = current.right;
                 index -= leftCount + 1;
@@ -1160,7 +1195,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      * square brackets ("[]"). Adjacent elements are separated by the characters ",
      * "
      * (comma and space). Elements are converted to strings as by
-     * String.valueOf(Object).
+     * {@code String.valueOf(Object)}.
      * 
      * This operation should be O(N).
      * 
@@ -1174,6 +1209,8 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         boolean hasNext = iterator.hasNext();
 
         while (hasNext) {
+            // StringBuilder.append(Object) uses String.valueOf(Object)
+
             result.append(iterator.next());
 
             hasNext = iterator.hasNext();
@@ -1197,7 +1234,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      * 
      * This operation should be O(N).
      * 
-     * @return string containing tree-like representation of this tree.
+     * @return a string containing tree-like representation of this tree
      */
     public String toStringTreeFormat() {
         // Exit early if there is no tree
@@ -1210,8 +1247,8 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
         // Use a node array, an integer array, a string builder, and one index to
         // simulate a recursive function stack trace with a node argument, a level
-        // argument, and a string return value; buffer size must be count + 1 to
-        // accommodate both the left and the right side pushed at the same time
+        // argument, and a string return value; the buffer size must be count + 1 to
+        // accommodate both the left side and the right side pushed at the same time
 
         final int bufferSize = root.count + 1;
         final Object[] nodes = new Object[bufferSize];
@@ -1225,7 +1262,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         nodes[0] = root;
 
         while (index > 0) {
-            // Process the current node
+            // Process the current node and level
 
             index--;
 
@@ -1264,21 +1301,40 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
         return result.toString();
     }
-    
+
+    /**
+     * Sorts an array of comparable values using the QuickSort algorithm.
+     * 
+     * @param array the values to sort
+     */
     private void sort(E[] array) {
+        // Use linked-list nodes to simulate a recursive function stack trace with a
+        // left and right index
+
         BSTIndexNode head = new BSTIndexNode();
+
+        // The left (first) index will be zero by default
+        // Push the last index of the array as the right index
 
         head.right = array.length - 1;
 
         while (head != null) {
-            int left = head.left;
-            int right = head.right;
-            int partition = partition(array, left, right);
+            // Peek the left and right indices from the top of the stack and select the
+            // pivot index (partition)
+
+            final int left = head.left;
+            final int right = head.right;
+            final int partition = partition(array, left, right);
+
+            // Pop the top of the stack
 
             head = head.next;
 
             if (partition - left > 1) {
-                BSTIndexNode node = new BSTIndexNode();
+                // Push a new node onto the stack:
+                // Simulate recursive call (left: left, right: partition - 1)
+
+                final BSTIndexNode node = new BSTIndexNode();
 
                 node.left = left;
                 node.right = partition - 1;
@@ -1287,7 +1343,10 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             }
 
             if (right - partition > 1) {
-                BSTIndexNode node = new BSTIndexNode();
+                // Push a new node onto the stack:
+                // Simulate recursive call (left: partition + 1, right: right)
+
+                final BSTIndexNode node = new BSTIndexNode();
 
                 node.left = partition + 1;
                 node.right = right;
@@ -1297,55 +1356,107 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         }
     }
 
+    /**
+     * Partitions the array. This method is used within a broader QuickSort
+     * algorithm.
+     * 
+     * @param array the values to sort
+     * @param left  the first index to examine
+     * @param right the last index to examine
+     * @return the index of the pivot element
+     */
     private int partition(E[] array, int left, int right) {
-        int pivot = findPivot(array, left, right);
+        // Select a pivot element and retrieve its index
+
+        int pivot = choosePivot(array, left, right);
+
+        // Swap the pivot element out of the way (to the end of the array)
 
         swap(array, right, pivot);
+
+        // Update the pointers
 
         pivot = right;
         right--;
 
         while (left <= right) {
+            // Move the left pointer right until it points to the pivot or an element that
+            // follows it
+
             while (array[left].compareTo(array[pivot]) < 0) {
                 left++;
             }
 
+            // Move the right pointer left until it points to an element that precedes the
+            // pivot or until it intersects with the left pointer
+
             while (right >= left && array[right].compareTo(array[pivot]) >= 0) {
                 right--;
             }
+
+            // Swap the left and right elements if the pointers have crossed
 
             if (right > left) {
                 swap(array, left, right);
             }
         }
 
+        // Swap the pivot element into its final position
+
         swap(array, left, pivot);
+
+        // Return the new index of the pivot element
 
         return left;
     }
-    
-    private int findPivot(E[] array, int left, int right) {
-        int center = (left + right) / 2;
+
+    /**
+     * Selects a pivot element using the median-of-three-values strategy. This
+     * method is used within a broader QuickSort algorithm.
+     * 
+     * @param array the values to sort
+     * @param left  the first index to examine
+     * @param right the last index to examine
+     * @return the index of the pivot element
+     */
+    private int choosePivot(E[] array, int left, int right) {
+        final int center = (left + right) / 2;
+
+        // If first element precedes the last element, then swap them
 
         if (array[right].compareTo(array[left]) < 0) {
             swap(array, left, right);
         }
 
+        // If the center element precedes the first element, then swap them
+
         if (array[center].compareTo(array[left]) < 0) {
             swap(array, center, left);
         }
+
+        // If the right element precedes the center element, then swap them
 
         if (array[right].compareTo(array[center]) < 0) {
             swap(array, right, center);
         }
 
+        // The first, last, and center elements have been sorted relative to one another
+        // It is relatively efficient to use the center element as the pivot
+
         return center;
     }
 
-    private void swap(E[] array, int a, int b) {
-        E item = array[a];
+    /**
+     * Swaps the elements at two given indices in an array.
+     * 
+     * @param array the array
+     * @param index the index of one element to swap
+     * @param other the index of the other element to swap
+     */
+    private void swap(E[] array, int index, int other) {
+        final E item = array[index];
 
-        array[a] = array[b];
-        array[b] = item;
+        array[index] = array[other];
+        array[other] = item;
     }
 }

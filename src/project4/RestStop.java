@@ -32,14 +32,31 @@ public class RestStop implements Comparable<RestStop> {
         this.axes = axes;
     }
 
+    /**
+     * Gets the number of single food rations available at this rest stop.
+     * 
+     * @return the food supplies
+     */
     public int getFoodRations() {
         return foodRations;
     }
 
+    /**
+     * Gets the net rafts, or the difference between the number of rafts
+     * available at this rest stop and the number of rivers at this rest stop.
+     * 
+     * @return the difference between raft supplies and river obstacles
+     */
     public int getRafts() {
         return rafts;
     }
 
+    /**
+     * Gets the net axes, or the difference between the number of axes available at
+     * this rest stop and the number of fallen trees at this rest stop.
+     * 
+     * @return the difference between axe supplies and fallen tree obstacles
+     */
     public int getAxes() {
         return axes;
     }
@@ -66,16 +83,35 @@ public class RestStop implements Comparable<RestStop> {
         return label.compareTo(o.label);
     }
 
+    /**
+     * Returns a string representation of this rest stop.
+     * 
+     * @return the rest stop label
+     */
     @Override
     public String toString() {
         return label;
     }
 
+    /**
+     * Returns a hash code value for the object.
+     * 
+     * @return the hash code value of the rest stop label
+     */
     @Override
     public int hashCode() {
         return label.hashCode();
     }
 
+    /**
+     * Compares the specified object with rest stop tree for equality.
+     * 
+     * Returns {@code true} if the given object is also a rest stop and the two rest
+     * stops have the same label.
+     * 
+     * @param obj object to be compared for equality with this rest stop
+     * @return {@code true} if the specified object is equal to this rest stop
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

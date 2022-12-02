@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"project4","l":"ArrayMatrix"},{"p":"project4","l":"BST"},{"p":"project4","l":"BSTMountain"},{"p":"project4","l":"EmptyArray"},{"p":"project4","l":"Hiker"},{"p":"project4","l":"MountainClimb"},{"p":"project4","l":"BST.Node"},{"p":"project4","l":"RestStop"}];updateSearchResults();

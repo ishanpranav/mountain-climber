@@ -43,7 +43,8 @@ public final class MountainClimb {
     /**
      * Provides a platform-agnostic, stream-based entry point for the application.
      * 
-     * @param inputStream the input stream containing instructions to be processed
+     * @param inputStream  the input stream containing instructions to be processed
+     * @param outputStream the output stream to which results are printed
      */
     public static void main(InputStream inputStream, PrintStream outputStream) {
         final BSTMountain mountain = new BSTMountain();
@@ -81,6 +82,7 @@ public final class MountainClimb {
                 }
 
                 // Parse obstacles and use lookahead for two-word obstacles
+                // Negative rafts represent rivers; negative axes represent fallen trees
 
                 while (index < count) {
                     final String obstacleSegment = segments[index];
@@ -101,6 +103,9 @@ public final class MountainClimb {
         }
 
         final ArrayMatrix<RestStop> paths = mountain.findPaths();
+
+        // Iterate over the matrix of viable paths, where the rows represent paths and
+        // the columns represent steps along those paths
 
         for (int row = 0; row < paths.getRows(); row++) {
             for (int column = 0; column < paths.getColumns(); column++) {
