@@ -304,7 +304,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
     private class BSTFixedStack {
         private final Object[] buffer;
 
-        private int stackSize;
+        private int count;
 
         /**
          * Initializes a new instance of the {@link BSTFixedStack} class.
@@ -329,7 +329,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
          * @return {@code true} if the stack is empty; otherwise, {@code false}
          */
         public boolean isEmpty() {
-            return stackSize == 0;
+            return count == 0;
         }
 
         /**
@@ -338,8 +338,8 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
          * @param item the item to add
          */
         public void push(Node item) {
-            buffer[stackSize] = item;
-            stackSize++;
+            buffer[count] = item;
+            count++;
         }
 
         /**
@@ -348,7 +348,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
          * @return the first item
          */
         public Node peek() {
-            return (Node) buffer[stackSize - 1];
+            return (Node) buffer[count - 1];
         }
 
         /**
@@ -359,15 +359,15 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         public Node pop() {
             final Node result = peek();
 
-            stackSize--;
-            buffer[stackSize] = null;
+            count--;
+            buffer[count] = null;
 
             return result;
         }
 
         /** Clears the stack, updating each node's height and count from bottom up. */
         private void saveChanges() {
-            while (stackSize > 0) {
+            while (count > 0) {
                 final Node node = pop();
                 final boolean hasLeft = node.left != null;
                 final boolean hasRight = node.right != null;
