@@ -681,16 +681,16 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
             final Node child;
 
-            if (current.left == null) {
-                // If the current node has a right child but no left, then the right will be
-                // used
-                // Otherwise, if it has no children, a null reference will be used
-
-                child = current.right;
-            } else {
-                // If the current node has a left child but no right, then the left will be used
+            if (hasLeft) {
+                // If the current node has a left child but no right, then the left child will
+                // be used
 
                 child = current.left;
+            } else {
+                // If the current node has a right child but no left, then the right child will
+                // be used; otherwise, if it has no children, a null reference will be used
+
+                child = current.right;
             }
 
             if (parent == null) {
