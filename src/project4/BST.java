@@ -96,9 +96,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
          * {@link BSTIterator} class.
          */
         protected BSTIterator() {
-            // The iterator uses a fixed array buffer since there will always be N elements
-            // A cached empty array avoids allocating mutliple identical array instances
-
             if (root == null) {
                 buffer = EmptyArray.instance();
             } else {
@@ -162,33 +159,22 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         /** Initializes a new instance of the {@link BSTSequentialIterator} class. */
         public BSTSequentialIterator() {
             if (root != null) {
-                // An inorder traversal occurs in left-root-right order
-
                 final BSTFixedStack stack = new BSTFixedStack(root.count);
-
-                // Begin with the root node
 
                 boolean done = false;
                 Node current = root;
 
                 while (!done) {
                     if (current != null) {
-                        // Move to the extreme left, reversing the left side in the process (stack is a
-                        // last-in, first-out collection)
-
                         stack.push(current);
 
                         current = current.left;
                     } else if (stack.isEmpty()) {
-                        // The leftmost node has been reached and the stack has been cleared
-
                         done = true;
                     } else {
                         current = stack.pop();
 
                         process(current.value);
-
-                        // Move from left to right if the stack is not empty
 
                         current = current.right;
                     }
@@ -207,28 +193,18 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         /** Initializes a new instance of the {@link BSTPreorderIterator} class. */
         public BSTPreorderIterator() {
             if (root != null) {
-                // A preorder traversal occurs in root-left-right order
-
                 final BSTFixedStack stack = new BSTFixedStack(root.count);
-
-                // Begin with the root node
 
                 stack.push(root);
 
                 while (!stack.isEmpty()) {
-                    // Process the current node
-
                     final Node current = stack.pop();
 
                     process(current.value);
 
-                    // Push the right side first (stack is a last-in, first-out collection)
-
                     if (current.right != null) {
                         stack.push(current.right);
                     }
-
-                    // Then push the left side
 
                     if (current.left != null) {
                         stack.push(current.left);
@@ -248,11 +224,7 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         /** Initializes a new instance of the {@link BSTPostorderIterator} class. */
         public BSTPostorderIterator() {
             if (root != null) {
-                // A postorder traversal occurs in left-right-root order
-
                 final BSTFixedStack stack = new BSTFixedStack(root.count);
-
-                // Begin with the root node
 
                 stack.push(root);
 
@@ -261,32 +233,21 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
                 while (!done) {
                     if (current != null) {
-                        // Move to the extreme left, reversing the left side in the process (stack is a
-                        // last-in, first-out collection)
-
                         stack.push(current);
 
                         current = current.left;
                     } else if (stack.isEmpty()) {
-                        // The leftmost node has been reached and the stack has been cleared
-
                         done = true;
                     } else {
                         Node right = stack.peek().right;
 
                         if (right == null) {
-                            // If the top element of the stack has no right child, then while the node is
-                            // the right child of the top element of the stack, move right-to-left and
-                            // process the root node
-
                             do {
                                 right = stack.pop();
 
                                 process(right.value);
                             } while (!stack.isEmpty() && stack.peek().right == right);
                         } else {
-                            // If the top element of the stack has a right child, then move to that child
-
                             current = right;
                         }
                     }
@@ -312,10 +273,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
          * @param capacity the fixed capacity of the internal buffer
          */
         public BSTFixedStack(int capacity) {
-            // The stack uses a fixed-size array buffer since there will be fixed number of
-            // recursive calls
-            // A cached empty array avoids allocating multiple identical array instances
-
             if (capacity == 0) {
                 buffer = EmptyArray.instance();
             } else {
@@ -373,24 +330,15 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
                 final boolean hasRight = node.right != null;
 
                 if (hasLeft && hasRight) {
-                    // The height is based on the maximum of the left and right sub-trees
-                    // The count is based on the total size of the left and right sub-trees
-
                     node.height = Math.max(node.left.height, node.right.height) + 1;
                     node.count = node.left.count + node.right.count + 1;
                 } else if (hasLeft) {
-                    // If there is only a left sub-tree, then use its height and count plus one
-
                     node.height = node.left.height + 1;
                     node.count = node.left.count + 1;
                 } else if (hasRight) {
-                    // If there is only a right sub-tree, then use its height and count plus one
-
                     node.height = node.right.height + 1;
                     node.count = node.right.count + 1;
                 } else {
-                    // If this is a leaf node, then its height and count are one by default
-
                     node.height = 1;
                     node.count = 1;
                 }
@@ -446,37 +394,20 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         System.arraycopy(collection, 0, array, 0, collection.length);
         sort(array);
 
-        // Use linked-list nodes to simulate a recursive function stack trace with a
-        // left and right index
-
         BSTIndexNode head = new BSTIndexNode();
-
-        // The left (first) index will be zero by default
-        // Push the last index of the array as the right index
 
         head.right = array.length - 1;
 
         while (head != null) {
-            // Peek the left and right indices from the top of the stack and calculate their
-            // average
-
             final int left = head.left;
             final int right = head.right;
             final int center = (right + left) / 2;
 
-            // Pop the top of the stack
-
             head = head.next;
-
-            // Add one median at a time to keep the tree balanced
 
             add(array[center]);
 
             if (left < right) {
-                // Push two new nodes onto the stack:
-                // Simulate recursive call (left: left, right: center - 1)
-                // Simulate recursive call (left: center + 1, right: right)
-
                 BSTIndexNode node = new BSTIndexNode();
 
                 node.left = left;
@@ -522,17 +453,12 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             throw new NullPointerException("Argument cannot be null. Argument name: e.");
         }
 
-        // Initialize an empty tree
-
         if (root == null) {
             root = new Node(e);
             version++;
 
             return true;
         }
-
-        // Use a fixed-size stack to guarantee that this operation has O(H) space
-        // complexity
 
         final BSTFixedStack stack = new BSTFixedStack(root.height);
 
@@ -543,16 +469,12 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         while (current != null) {
             stack.push(current);
 
-            // Exit early if the element already exists in the tree
-
             if (Objects.equals(current.value, e)) {
                 return false;
             }
 
             comparison = e.compareTo(current.value);
             parent = current;
-
-            // Binary search: move left or right based on the element's relative order
 
             if (comparison < 0) {
                 current = current.left;
@@ -562,9 +484,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         }
 
         final Node node = new Node(e);
-
-        // The current node is null and the parent is the leaf
-        // Add to the left or right of the leaf depending on the last comparison
 
         if (comparison < 0) {
             parent.left = node;
@@ -598,14 +517,9 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             throw new NullPointerException("Argument cannot be null. Argument name: o.");
         }
 
-        // Exit early if there is nothing to remove
-
         if (root == null) {
             return false;
         }
-
-        // Use a fixed-size stack to guarantee that this operation has O(H) space
-        // complexity
 
         final E e = (E) o;
         final BSTFixedStack stack = new BSTFixedStack(root.height);
@@ -618,25 +532,18 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
             final int comparison = e.compareTo(current.value);
 
-            // Exit early if the element exists in the tree
-
             if (comparison == 0) {
                 break;
             }
 
             parent = current;
-
-            // Binary search: move left or right based on the element's relative order
-
+            
             if (comparison < 0) {
                 current = current.left;
             } else {
                 current = current.right;
             }
         }
-
-        // If the loop terminates without reaching the early exit condition, then the
-        // element does not already exist in the tree
 
         if (current == null) {
             return false;
@@ -646,14 +553,10 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         final boolean hasRight = current.right != null;
 
         if (hasLeft && hasRight) {
-            // If the current node has two children, start on the right sub-tree
-
             Node successorParent = current;
             Node successor = current.right;
 
             stack.push(successor);
-
-            // Move to the extreme left of the right sub-tree
 
             while (successor.left != null) {
                 stack.push(successor.left);
@@ -663,49 +566,27 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             }
 
             if (successorParent == current) {
-                // Move the inorder successor's right sub-tree to the right of the current node
-
                 current.right = successor.right;
             } else {
-                // Move the inorder succesor's right sub-tree to the left of its parent
-
                 successorParent.left = successor.right;
             }
 
-            // Replace the current node's value with the value of it's inorder successor
-
             current.value = successor.value;
         } else {
-            // If the current node has one child or no children, replace it with its child
-            // or a null reference
-
             final Node child;
 
             if (hasLeft) {
-                // If the current node has a left child but no right, then the left child will
-                // be used
-
                 child = current.left;
             } else {
-                // If the current node has a right child but no left, then the right child will
-                // be used; otherwise, if it has no children, a null reference will be used
-
                 child = current.right;
             }
 
             if (parent == null) {
-                // If the current node is the root, then its child will become the new root
-
                 root = child;
+            } else if (current == parent.left) {
+                parent.left = child;
             } else {
-                // The parent of the current node adopts the current node's child (its
-                // grandchild) to the same side on which the current node used to be
-
-                if (current == parent.left) {
-                    parent.left = child;
-                } else {
-                    parent.right = child;
-                }
+                parent.right = child;
             }
         }
 
@@ -756,21 +637,13 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             int comparison = e.compareTo(current.value);
 
             if (comparison == 0) {
-                // Found the element
-
                 return true;
             } else if (comparison < 0) {
-                // If the element precedes the current node, advance left
-
                 current = current.left;
             } else if (comparison > 0) {
-                // If the element follows the current node, advance right
-
                 current = current.right;
             }
         }
-
-        // The root is null or the loop terminated without finding the element
 
         return false;
     }
@@ -876,8 +749,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         Node current = root;
 
         while (current != null) {
-            // Count the number of nodes in the left sub-tree
-
             final int leftCount;
 
             if (current.left == null) {
@@ -887,18 +758,11 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             }
 
             if (index < leftCount) {
-                // If the index is on the left side, move left
-
                 current = current.left;
             } else if (index > leftCount) {
-                // If the index is on the right side, move right and narrow in on the right
-                // sub-tree, skipping the entire left sub-tree and the current node
-
                 current = current.right;
                 index -= leftCount + 1;
             } else {
-                // The index was found
-
                 return current.value;
             }
         }
@@ -931,21 +795,14 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             final int comparison = e.compareTo(current.value);
 
             if (comparison <= 0) {
-                // If the element is lower than or equal the current node, advance left
-                // The current node is lower than or equal to the element
-
                 ceiling = current;
                 current = current.left;
             } else {
-                // If the element is strictly higher than the current node, advance right
-
                 current = current.right;
             }
         }
 
         if (ceiling == null) {
-            // The root is null or no nodes are higher than or equal to the element
-
             return null;
         } else {
             return ceiling.value;
@@ -977,21 +834,14 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             final int comparison = e.compareTo(current.value);
 
             if (comparison >= 0) {
-                // If the element is higher than or equal the current node, advance right
-                // The current node is higher than or equal to the element
-
                 floor = current;
                 current = current.right;
             } else {
-                // If the element is strictly lower than the current node, advance left
-
                 current = current.left;
             }
         }
 
         if (floor == null) {
-            // The root is null or no nodes are lower than or equal to the element
-
             return null;
         } else {
             return floor.value;
@@ -1010,10 +860,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         if (root == null) {
             throw new NoSuchElementException("Cannot retrieve the first element of an empty tree.");
         }
-
-        Node current = root;
-
-        // Move to the extreme left
 
         while (current.left != null) {
             current = current.left;
@@ -1036,8 +882,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         }
 
         Node current = root;
-
-        // Move to the extreme right
 
         while (current.right != null) {
             current = current.right;
@@ -1071,21 +915,14 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             final int comparison = e.compareTo(current.value);
 
             if (comparison > 0) {
-                // If the element follows the current node, advance right
-                // The current node is strictly higher than the element
-
                 lower = current;
                 current = current.right;
             } else {
-                // If the element precedes the current node, advance left
-
                 current = current.left;
             }
         }
 
         if (lower == null) {
-            // The root is null or no nodes precede the element
-
             return null;
         } else {
             return lower.value;
@@ -1117,21 +954,14 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             final int comparison = e.compareTo(current.value);
 
             if (comparison < 0) {
-                // If the element precedes the current node, advance left
-                // The current node is strictly lower than the element
-
                 higher = current;
                 current = current.left;
             } else {
-                // If the element follows the current node, advance right
-
                 current = current.right;
             }
         }
 
         if (higher == null) {
-            // The root is null or no nodes follow the element
-
             return null;
         } else {
             return higher.value;
@@ -1152,22 +982,16 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
-            // Exit early if comparing the same instance
-
             return true;
         }
 
         if (!(obj instanceof BST)) {
-            // Exit early if the types are mismatched
-
             return false;
         }
 
         final BST other = (BST) obj;
 
         if (size() != other.size()) {
-            // Exit early if the sizes are different
-
             return false;
         }
 
@@ -1176,13 +1000,9 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
 
         while (iterator.hasNext()) {
             if (!Objects.equals(iterator.next(), otherIterator.next())) {
-                // A difference was detected
-
                 return false;
             }
         }
-
-        // No differences were detected
 
         return true;
     }
@@ -1209,8 +1029,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         boolean hasNext = iterator.hasNext();
 
         while (hasNext) {
-            // StringBuilder.append(Object) uses String.valueOf(Object)
-
             result.append(iterator.next());
 
             hasNext = iterator.hasNext();
@@ -1237,18 +1055,9 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      * @return a string containing tree-like representation of this tree
      */
     public String toStringTreeFormat() {
-        // Exit early if there is no tree
-
         if (root == null) {
             return "null";
         }
-
-        // A preorder traversal occurs in root-left-right order
-
-        // Use a node array, an integer array, a string builder, and one index to
-        // simulate a recursive function stack trace with a node argument, a level
-        // argument, and a string return value; the buffer size must be count + 1 to
-        // accommodate both the left side and the right side pushed at the same time
 
         final int bufferSize = root.count + 1;
         final Object[] nodes = new Object[bufferSize];
@@ -1262,8 +1071,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
         nodes[0] = root;
 
         while (index > 0) {
-            // Process the current node and level
-
             index--;
 
             final Node node = (Node) nodes[index];
@@ -1281,8 +1088,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             if (node == null) {
                 result.append("null");
             } else {
-                // Push the right and left sides (stack is a last-in, first-out collection)
-
                 level++;
                 nodes[index] = node.right;
                 levels[index] = level;
@@ -1308,32 +1113,18 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      * @param array the values to sort
      */
     private void sort(E[] array) {
-        // Use linked-list nodes to simulate a recursive function stack trace with a
-        // left and right index
-
         BSTIndexNode head = new BSTIndexNode();
-
-        // The left (first) index will be zero by default
-        // Push the last index of the array as the right index
 
         head.right = array.length - 1;
 
         while (head != null) {
-            // Peek the left and right indices from the top of the stack and select the
-            // pivot index (partition)
-
             final int left = head.left;
             final int right = head.right;
             final int partition = partition(array, left, right);
 
-            // Pop the top of the stack
-
             head = head.next;
 
             if (partition - left > 1) {
-                // Push a new node onto the stack:
-                // Simulate recursive call (left: left, right: partition - 1)
-
                 final BSTIndexNode node = new BSTIndexNode();
 
                 node.left = left;
@@ -1343,9 +1134,6 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             }
 
             if (right - partition > 1) {
-                // Push a new node onto the stack:
-                // Simulate recursive call (left: partition + 1, right: right)
-
                 final BSTIndexNode node = new BSTIndexNode();
 
                 node.left = partition + 1;
@@ -1366,46 +1154,28 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
      * @return the index of the pivot element
      */
     private int partition(E[] array, int left, int right) {
-        // Select a pivot element and retrieve its index
-
         int pivot = choosePivot(array, left, right);
 
-        // Swap the pivot element out of the way (to the end of the array)
-
         swap(array, right, pivot);
-
-        // Update the pointers
 
         pivot = right;
         right--;
 
         while (left <= right) {
-            // Move the left pointer right until it points to the pivot or an element that
-            // follows it
-
             while (array[left].compareTo(array[pivot]) < 0) {
                 left++;
             }
 
-            // Move the right pointer left until it points to an element that precedes the
-            // pivot or until it intersects with the left pointer
-
             while (right >= left && array[right].compareTo(array[pivot]) >= 0) {
                 right--;
             }
-
-            // Swap the left and right elements if the pointers have crossed
 
             if (right > left) {
                 swap(array, left, right);
             }
         }
 
-        // Swap the pivot element into its final position
-
         swap(array, left, pivot);
-
-        // Return the new index of the pivot element
 
         return left;
     }
@@ -1422,26 +1192,17 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
     private int choosePivot(E[] array, int left, int right) {
         final int center = (left + right) / 2;
 
-        // If first element precedes the last element, then swap them
-
         if (array[right].compareTo(array[left]) < 0) {
             swap(array, left, right);
         }
-
-        // If the center element precedes the first element, then swap them
 
         if (array[center].compareTo(array[left]) < 0) {
             swap(array, center, left);
         }
 
-        // If the right element precedes the center element, then swap them
-
         if (array[right].compareTo(array[center]) < 0) {
             swap(array, right, center);
         }
-
-        // The first, last, and center elements have been sorted relative to one another
-        // It is relatively efficient to use the center element as the pivot
 
         return center;
     }
