@@ -25,8 +25,6 @@ public class ArrayMatrix<E> {
         this.rows = rows;
         this.columns = columns;
 
-        // A cached empty array avoids allocating mutliple identical array instances
-
         if (rows == 0) {
             buffer = EmptyArray.instance();
         } else {
@@ -98,11 +96,6 @@ public class ArrayMatrix<E> {
         int capacity = buffer.length;
 
         if (count == capacity) {
-            // Grow the matrix to satisfy the following constraints
-            // 1. The capacity of the new matrix is at least double (to allow the add
-            // operation to complete in amortized constant time)
-            // 2. The new matrix can accommodate at least the length of the new row
-
             if (capacity == 0) {
                 capacity = count + columns;
             } else {
@@ -111,16 +104,12 @@ public class ArrayMatrix<E> {
 
             final Object[] newMatrix = new Object[capacity];
 
-            // Include the existing elements
-
             if (count > 0) {
                 System.arraycopy(buffer, 0, newMatrix, 0, count);
             }
 
             buffer = (E[]) newMatrix;
         }
-
-        // Add the new row
 
         System.arraycopy(row, 0, buffer, count, columns);
 
