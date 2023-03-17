@@ -861,6 +861,8 @@ public class BST<E extends Comparable<E>> implements Iterable<E> {
             throw new NoSuchElementException("Cannot retrieve the first element of an empty tree.");
         }
 
+        Node current = root;
+        
         while (current.left != null) {
             current = current.left;
         }
